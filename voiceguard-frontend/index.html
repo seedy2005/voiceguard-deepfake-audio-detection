@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VoiceGuard · AI Audio Authenticity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- Background blobs -->
+<div class="bg-blob bg-blob-1"></div>
+<div class="bg-blob bg-blob-2"></div>
+<div class="bg-blob bg-blob-3"></div>
+
+<div class="page">
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2 L15.09 8.26 L22 9.27 L17 14.14 L18.18 21.02 L12 17.77 L5.82 21.02 L7 14.14 L2 9.27 L8.91 8.26 Z"/></svg>
+      </div>
+      <div class="logo-name">Voice<span>Guard</span></div>
+    </div>
+    <div class="badge">AI POWERED</div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Deepfake Audio Detection</div>
+    <h1>Is this voice <em>real</em> or synthetic?</h1>
+    <p>Upload any audio clip and our neural analysis engine will determine authenticity with high confidence in seconds.</p>
+  </div>
+
+  <div class="main-card">
+
+    <!-- Upload UI -->
+    <div id="uploadSection">
+      <div class="upload-zone" id="dropZone">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="upload-title">Drop your audio file here</div>
+        <div class="upload-sub">or <strong id="browseBtn">browse to upload</strong></div>
+        <div class="file-types">
+          <span class="file-type">MP3</span>
+          <span class="file-type">WAV</span>
+          <span class="file-type">M4A</span>
+          <span class="file-type">OGG</span>
+          <span class="file-type">FLAC</span>
+        </div>
+        <input type="file" id="fileInput" accept="audio/*">
+      </div>
+
+      <div class="file-selected" id="fileSelected">
+        <div class="file-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zm12-2c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2z"/></svg>
+        </div>
+        <div class="file-info">
+          <div class="file-name" id="fileName">audio.mp3</div>
+          <div class="waveform" id="waveform">
+            <div class="waveform-bar"></div><div class="waveform-bar"></div><div class="waveform-bar"></div>
+            <div class="waveform-bar"></div><div class="waveform-bar"></div><div class="waveform-bar"></div>
+            <div class="waveform-bar"></div><div class="waveform-bar"></div><div class="waveform-bar"></div>
+            <div class="waveform-bar"></div><div class="waveform-bar"></div><div class="waveform-bar"></div>
+          </div>
+          <div class="file-size" id="fileSize">0 KB</div>
+        </div>
+        <button class="file-remove" id="removeFile" title="Remove file">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <button class="btn-analyze" id="analyzeBtn" disabled>
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Analyze Audio
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-panel" id="loadingPanel">
+      <div class="loader-ring">
+        <svg viewBox="0 0 72 72">
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#60a5fa"/>
+              <stop offset="100%" style="stop-color:#2563eb"/>
+            </linearGradient>
+          </defs>
+          <circle class="track" cx="36" cy="36" r="30"/>
+          <circle class="fill" cx="36" cy="36" r="30"/>
+        </svg>
+      </div>
+      <div class="loading-label" id="loadingLabel">Preprocessing audio…</div>
+      <div class="loading-steps">
+        <div class="loading-step active" id="step1"><span class="dot"></span> Extracting spectral features</div>
+        <div class="loading-step" id="step2"><span class="dot"></span> Running neural classifier</div>
+        <div class="loading-step" id="step3"><span class="dot"></span> Calibrating confidence score</div>
+        <div class="loading-step" id="step4"><span class="dot"></span> Computing risk assessment</div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-panel" id="resultsPanel">
+
+      <div class="result-verdict" id="verdictCard">
+        <div class="verdict-icon" id="verdictIcon">
+          <svg id="verdictCheck" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg id="verdictX" viewBox="0 0 24 24" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div class="verdict-label" id="verdictLabel">DETECTION RESULT</div>
+        <div class="verdict-word" id="verdictWord">REAL</div>
+        <div class="verdict-sub" id="verdictSub">This audio appears to be authentic</div>
+      </div>
+
+      <div class="gauge-section">
+        <div class="gauge-label">Confidence Score</div>
+        <div class="gauge-wrap">
+          <svg viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" id="gaugeStop1" style="stop-color:#4ade80"/>
+                <stop offset="100%" id="gaugeStop2" style="stop-color:#22c55e"/>
+              </linearGradient>
+            </defs>
+            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#e0efff" stroke-width="12" stroke-linecap="round"/>
+            <path id="gaugeFill" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251" style="transition: stroke-dashoffset 1.4s cubic-bezier(0.22,1,0.36,1);"/>
+            <circle id="gaugeNeedle" cx="100" cy="100" r="6" fill="#2563eb" style="transition: all 1.4s cubic-bezier(0.22,1,0.36,1);"/>
+          </svg>
+          <div class="gauge-text">
+            <div class="gauge-pct" id="gaugePct">0%</div>
+            <div class="gauge-pct-label">confidence</div>
+          </div>
+        </div>
+        <div class="gauge-ticks"><span>0%</span><span>50%</span><span>100%</span></div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-card-label">Authenticity</div>
+          <div class="metric-card-value" id="metricAuth">—</div>
+          <div class="metric-card-sub">probability score</div>
+          <div class="progress-bar-wrap"><div class="progress-bar" id="barAuth" style="width:0%; background: linear-gradient(90deg,#4ade80,#22c55e);"></div></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-card-label">Deepfake Prob.</div>
+          <div class="metric-card-value" id="metricFake">—</div>
+          <div class="metric-card-sub">synthesis likelihood</div>
+          <div class="progress-bar-wrap"><div class="progress-bar" id="barFake" style="width:0%; background: linear-gradient(90deg,#f87171,#ef4444);"></div></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-card-label">Model</div>
+          <div class="metric-card-value" style="font-size:1rem; padding-top:4px;" id="metricModel">—</div>
+          <div class="metric-card-sub" id="metricModelSub">detection engine</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-card-label">Latency</div>
+          <div class="metric-card-value" id="metricLatency">—</div>
+          <div class="metric-card-sub">analysis time</div>
+        </div>
+      </div>
+
+      <div class="risk-card" id="riskCard">
+        <div class="risk-dot" id="riskDot">
+          <svg id="riskIcon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <div class="risk-info">
+          <div class="risk-level" id="riskLevel">RISK LEVEL</div>
+          <div class="risk-title" id="riskTitle">Allow</div>
+          <div class="risk-desc" id="riskDesc">Audio passes authenticity checks.</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="action-row">
+        <button class="btn-secondary" id="resetBtn">← Analyze another</button>
+        <button class="btn-primary-sm" id="exportBtn">Export report</button>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    Powered by VoiceGuard Neural Engine &nbsp;·&nbsp; <a href="#">Privacy Policy</a> &nbsp;·&nbsp; v2.1.0
+  </footer>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="api/config.js"></script>
+<script src="components/ui.js"></script>
+<script src="components/gauge.js"></script>
+<script src="api/predict.js"></script>
+<script src="assets/main.js"></script>
+</body>
+</html>

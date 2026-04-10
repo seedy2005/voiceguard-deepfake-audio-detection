@@ -1,0 +1,30 @@
+# Virtual environments
+
+venv/
+.venv/
+src/venv310/
+
+# Python cache
+
+**pycache**/
+*.pyc
+
+# Model files
+
+*.pt
+checkpoints/
+
+# Data
+
+data/
+*.flac
+*.wav
+
+# Logs
+
+*.csv
+
+# OS files
+
+.DS_Store
+Thumbs.db
